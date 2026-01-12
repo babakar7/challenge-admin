@@ -20,8 +20,10 @@ interface MealOption {
   id: string
   option_a_name: string
   option_a_description: string | null
+  option_a_image_url: string | null
   option_b_name: string
   option_b_description: string | null
+  option_b_image_url: string | null
 }
 
 interface EditMealPanelProps {
@@ -50,15 +52,19 @@ export function EditMealPanel({
   const [loading, setLoading] = useState(false)
   const [optionAName, setOptionAName] = useState('')
   const [optionADesc, setOptionADesc] = useState('')
+  const [optionAImage, setOptionAImage] = useState('')
   const [optionBName, setOptionBName] = useState('')
   const [optionBDesc, setOptionBDesc] = useState('')
+  const [optionBImage, setOptionBImage] = useState('')
 
   useEffect(() => {
     if (open) {
       setOptionAName(existingMeal?.option_a_name ?? '')
       setOptionADesc(existingMeal?.option_a_description ?? '')
+      setOptionAImage(existingMeal?.option_a_image_url ?? '')
       setOptionBName(existingMeal?.option_b_name ?? '')
       setOptionBDesc(existingMeal?.option_b_description ?? '')
+      setOptionBImage(existingMeal?.option_b_image_url ?? '')
     }
   }, [open, existingMeal])
 
@@ -69,8 +75,10 @@ export function EditMealPanel({
     const formData = new FormData()
     formData.append('option_a_name', optionAName)
     formData.append('option_a_description', optionADesc)
+    formData.append('option_a_image_url', optionAImage)
     formData.append('option_b_name', optionBName)
     formData.append('option_b_description', optionBDesc)
+    formData.append('option_b_image_url', optionBImage)
 
     let result
     if (existingMeal) {
@@ -139,6 +147,17 @@ export function EditMealPanel({
                 rows={2}
               />
             </div>
+            <div className="space-y-2">
+              <Label htmlFor="option_a_image">Image URL (optional)</Label>
+              <Input
+                id="option_a_image"
+                type="url"
+                value={optionAImage}
+                onChange={(e) => setOptionAImage(e.target.value)}
+                placeholder="https://example.com/image.jpg"
+                disabled={loading}
+              />
+            </div>
           </div>
 
           {/* Option B */}
@@ -164,6 +183,17 @@ export function EditMealPanel({
                 placeholder="Brief description of the meal"
                 disabled={loading}
                 rows={2}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="option_b_image">Image URL (optional)</Label>
+              <Input
+                id="option_b_image"
+                type="url"
+                value={optionBImage}
+                onChange={(e) => setOptionBImage(e.target.value)}
+                placeholder="https://example.com/image.jpg"
+                disabled={loading}
               />
             </div>
           </div>

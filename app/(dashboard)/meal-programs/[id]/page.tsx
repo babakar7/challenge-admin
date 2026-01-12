@@ -17,8 +17,10 @@ interface MealOption {
   meal_type: string
   option_a_name: string
   option_a_description: string | null
+  option_a_image_url: string | null
   option_b_name: string
   option_b_description: string | null
+  option_b_image_url: string | null
 }
 
 interface MealProgram {
