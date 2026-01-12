@@ -1,0 +1,86 @@
+import { createClient } from '@/lib/supabase/server'
+import { SelectionsTable } from '@/components/selections/selections-table'
+import { SelectionExport } from '@/components/selections/selection-export'
+
+interface SelectionsPageProps {
+  params: Promise<{ id: string }>
+}
+
+async function getSelections(cohortId: string) {
+  const supabase = await createClient()
+
+  // Get selections with user info
+  const { data: selections } = await supabase
+    .from('meal_selections')
+    .select(`
+      *,
+      profiles!inner (
+        id,
+        email,
+        full_name,
+        cohort_id
+      )
+    `)
+    .eq('profiles.cohort_id', cohortId)
+    .order('challenge_week')
+    .order('created_at', { ascending: false })
+
+  // Get all meal options to resolve names
+  const { data: mealOptions } = await supabase
+    .from('meal_options')
+    .select('*')
+
+  return { selections: selections ?? [], mealOptions: mealOptions ?? [] }
+}
+
+export default async function SelectionsPage({ params }: SelectionsPageProps) {
+  const { id: cohortId } = await params
+  const { selections, mealOptions } = await getSelections(cohortId)
+
+  // Group selections by week
+  const selectionsByWeek = selections.reduce((acc, selection) => {
+    const week = selection.challenge_week
+    if (week === null) return acc
+    if (!acc[week]) acc[week] = []
+    acc[week].push(selection)
+    return acc
+  }, {} as Record<number, typeof selections>)
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-muted-foreground">
+          {selections.length} total selection{selections.length !== 1 ? 's' : ''}
+        </p>
+        <SelectionExport cohortId={cohortId} />
+      </div>
+
+      {Object.keys(selectionsByWeek).length === 0 ? (
+        <div className="text-center py-12 bg-card rounded-xl border border-border">
+          <p className="text-muted-foreground">No meal selections yet</p>
+          <p className="text-sm text-muted-foreground mt-1">
+            Participants will submit their selections through the mobile app
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-8">
+          {[1, 2, 3, 4].map((week) => {
+            const weekSelections = selectionsByWeek[week]
+            if (!weekSelections || weekSelections.length === 0) return null
+
+            return (
+              <div key={week}>
+                <h2 className="text-lg font-medium text-foreground mb-4">Week {week}</h2>
+                <SelectionsTable
+                  selections={weekSelections}
+                  mealOptions={mealOptions}
+                  week={week}
+                />
+              </div>
+            )
+          })}
+        </div>
+      )}
+    </div>
+  )
+}
