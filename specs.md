@@ -60,8 +60,14 @@ An admin web application for managing the "Revive 28-Day Weight Loss Challenge" 
 ### 5. Meal Selections Viewer
 - View all user meal selections
 - Filter by week, cohort, delivery preference
-- See selection breakdown (A vs B counts)
-- Export to CSV for meal prep
+- Displays actual meal names (not just A/B)
+- Export to CSV for meal prep (includes meal names)
+
+### 6. Participation History
+- Track all challenges a user has participated in
+- Show status: active, completed, or left
+- Display join dates and challenge periods
+- Accessible from user detail page
 
 ## Database Schema
 
@@ -84,11 +90,25 @@ An admin web application for managing the "Revive 28-Day Weight Loss Challenge" 
 | id | uuid | PK, FK to auth.users |
 | email | text | User email |
 | full_name | text | Display name |
-| cohort_id | uuid | FK to cohorts |
+| cohort_id | uuid | FK to cohorts (current challenge) |
 | role | text | 'user', 'super_admin', 'viewer' |
 | push_token | text | Expo push token |
 | created_at | timestamptz | Auto-set |
 | updated_at | timestamptz | Auto-updated |
+
+#### cohort_participants
+| Column | Type | Description |
+|--------|------|-------------|
+| id | uuid | Primary key |
+| user_id | uuid | FK to profiles |
+| cohort_id | uuid | FK to cohorts |
+| joined_at | timestamptz | When user joined this challenge |
+| left_at | timestamptz | When user left (null if active) |
+| status | text | 'active', 'completed', 'left' |
+| created_at | timestamptz | Auto-set |
+| updated_at | timestamptz | Auto-updated |
+
+*Note: Junction table for tracking participation history. UNIQUE(user_id, cohort_id).*
 
 #### meal_options
 | Column | Type | Description |
@@ -164,12 +184,18 @@ An admin web application for managing the "Revive 28-Day Weight Loss Challenge" 
 
 5. **Meal Structure**: 2 meals per day (lunch + dinner), each with A/B options. No breakfast.
 
+6. **Participation Tracking**: When a user is added to a new challenge, their previous active participation is marked as "completed" and a new record is created. Users can participate in multiple challenges over time.
+
 ## UI/UX Requirements
 
 - **Design**: Clean, minimal, professional (inspired by Linear/Notion)
 - **Responsiveness**: Desktop-first, but functional on tablet
-- **Navigation**: Sidebar with main sections
-- **Feedback**: Toast notifications for actions
+- **Navigation**: Challenge-centric (no sidebar)
+  - Header with challenge dropdown switcher
+  - Horizontal tabs within challenge: Overview | Participants | Selections | Meals
+  - Landing page redirects to most recent challenge
+- **Create/Edit Flows**: Slide-over panels (Sheet component)
+- **Feedback**: Toast notifications for actions (sonner)
 - **Loading States**: Skeleton loaders for data fetching
 - **Confirmations**: Dialogs for destructive actions
 
@@ -186,3 +212,19 @@ SUPABASE_SERVICE_ROLE_KEY=<service role key - KEEP SECRET>
 - **Project ID**: cmpecuolthmjxvwcutom
 - **Region**: (check dashboard)
 - **First Super Admin**: bbd2501@gmail.com
+
+## Row Level Security
+
+### Security Definer Functions
+To avoid RLS infinite recursion when checking admin roles, the following functions are used:
+
+- `is_admin()` - Returns true if current user has role 'super_admin' or 'viewer'
+- `is_super_admin()` - Returns true if current user has role 'super_admin'
+
+These functions use `SECURITY DEFINER` to bypass RLS when checking the profiles table.
+
+### Key Policies
+- **profiles**: Users can view own profile; admins can view all profiles
+- **cohorts**: Admins can view; super_admins can create/update/delete
+- **cohort_participants**: Admins can view; super_admins can manage
+- **meal_options, meal_selections, daily_habits, check_ins, streaks**: Various policies based on user ownership and admin status

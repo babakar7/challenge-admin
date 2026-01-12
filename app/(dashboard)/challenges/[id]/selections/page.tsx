@@ -9,6 +9,13 @@ interface SelectionsPageProps {
 async function getSelections(cohortId: string) {
   const supabase = await createClient()
 
+  // Get the cohort to find its meal_program_id
+  const { data: cohort } = await supabase
+    .from('cohorts')
+    .select('meal_program_id')
+    .eq('id', cohortId)
+    .single()
+
   // Get selections with user info
   const { data: selections } = await supabase
     .from('meal_selections')
@@ -25,12 +32,17 @@ async function getSelections(cohortId: string) {
     .order('challenge_week')
     .order('created_at', { ascending: false })
 
-  // Get all meal options to resolve names
-  const { data: mealOptions } = await supabase
-    .from('meal_options')
-    .select('*')
+  // Get meal options filtered by the cohort's meal program
+  let mealOptions: any[] = []
+  if (cohort?.meal_program_id) {
+    const { data } = await supabase
+      .from('meal_options')
+      .select('*')
+      .eq('meal_program_id', cohort.meal_program_id)
+    mealOptions = data ?? []
+  }
 
-  return { selections: selections ?? [], mealOptions: mealOptions ?? [] }
+  return { selections: selections ?? [], mealOptions }
 }
 
 export default async function SelectionsPage({ params }: SelectionsPageProps) {

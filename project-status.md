@@ -1,8 +1,20 @@
 # Revive Admin Dashboard - Project Status
 
-## Current Phase: PARTICIPATION HISTORY TRACKING COMPLETED
+## Current Phase: MEAL PROGRAMS FEATURE COMPLETED
 
 ## Recent Changes (January 2026)
+
+### Meal Programs Feature
+- [x] Created `meal_programs` table with RLS policies
+- [x] Added `meal_program_id` to `meal_options` (required) and `cohorts` (optional)
+- [x] Created default program and migrated existing meal data
+- [x] Created `/meal-programs` list page with program cards
+- [x] Created `/meal-programs/[id]` detail page with week tabs for editing meals
+- [x] Added program selector dropdown to challenge create/edit panels
+- [x] Meals tab in challenges now read-only with link to edit in Meal Programs
+- [x] Selections page filters meal options by cohort's assigned program
+- [x] Added "Meal Programs" nav link in header
+- [x] Implemented duplicate program functionality
 
 ### Participation History Tracking
 - [x] Created `cohort_participants` junction table for tracking user participation across challenges
@@ -74,6 +86,18 @@
 
 ---
 
+### Phase 9: Meal Programs Module - COMPLETED
+- [x] Create meal_programs table with RLS
+- [x] Create meal programs list page
+- [x] Create meal program detail/edit page
+- [x] Create program selector component
+- [x] Add program selector to challenge panels
+- [x] Update meals tab to be read-only
+- [x] Update selections to filter by program
+- [x] Add Meal Programs link to header
+
+---
+
 ## Routes
 
 | Route | Description |
@@ -83,8 +107,10 @@
 | `/challenges/[id]` | Challenge overview (stats, dates) |
 | `/challenges/[id]/participants` | Participants list for challenge |
 | `/challenges/[id]/participants/[uid]` | User detail page |
-| `/challenges/[id]/meals` | Meal options with week tabs |
+| `/challenges/[id]/meals` | Meal options (read-only, links to program) |
 | `/challenges/[id]/selections` | Meal selections with actual names |
+| `/meal-programs` | List all meal programs |
+| `/meal-programs/[id]` | Edit meals within a program |
 | `/api/export/selections` | CSV export endpoint |
 
 ---

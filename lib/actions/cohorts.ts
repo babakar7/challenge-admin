@@ -8,6 +8,7 @@ import { addDays, format } from 'date-fns'
 const cohortSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   start_date: z.string().min(1, 'Start date is required'),
+  meal_program_id: z.string().uuid().optional().nullable(),
 })
 
 async function verifySuperAdmin() {
@@ -35,9 +36,11 @@ export async function createCohort(formData: FormData) {
     return { error: 'Unauthorized' }
   }
 
+  const mealProgramId = formData.get('meal_program_id')
   const input = cohortSchema.safeParse({
     name: formData.get('name'),
     start_date: formData.get('start_date'),
+    meal_program_id: mealProgramId && mealProgramId !== '' ? mealProgramId : null,
   })
 
   if (!input.success) {
@@ -54,6 +57,7 @@ export async function createCohort(formData: FormData) {
       start_date: format(startDate, 'yyyy-MM-dd'),
       end_date: format(endDate, 'yyyy-MM-dd'),
       is_active: false,
+      meal_program_id: input.data.meal_program_id || null,
     })
     .select()
     .single()
@@ -73,9 +77,11 @@ export async function updateCohort(id: string, formData: FormData) {
     return { error: 'Unauthorized' }
   }
 
+  const mealProgramId = formData.get('meal_program_id')
   const input = cohortSchema.safeParse({
     name: formData.get('name'),
     start_date: formData.get('start_date'),
+    meal_program_id: mealProgramId && mealProgramId !== '' ? mealProgramId : null,
   })
 
   if (!input.success) {
@@ -91,6 +97,7 @@ export async function updateCohort(id: string, formData: FormData) {
       name: input.data.name,
       start_date: format(startDate, 'yyyy-MM-dd'),
       end_date: format(endDate, 'yyyy-MM-dd'),
+      meal_program_id: input.data.meal_program_id || null,
     })
     .eq('id', id)
     .select()

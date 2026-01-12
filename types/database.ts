@@ -50,6 +50,7 @@ export type Database = {
           end_date: string
           id: string
           is_active: boolean | null
+          meal_program_id: string | null
           name: string
           start_date: string
           updated_at: string | null
@@ -59,6 +60,7 @@ export type Database = {
           end_date: string
           id?: string
           is_active?: boolean | null
+          meal_program_id?: string | null
           name: string
           start_date: string
           updated_at?: string | null
@@ -68,11 +70,20 @@ export type Database = {
           end_date?: string
           id?: string
           is_active?: boolean | null
+          meal_program_id?: string | null
           name?: string
           start_date?: string
           updated_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "cohorts_meal_program_id_fkey"
+            columns: ["meal_program_id"]
+            isOneToOne: false
+            referencedRelation: "meal_programs"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       cohort_participants: {
         Row: {
@@ -121,6 +132,30 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      meal_programs: {
+        Row: {
+          id: string
+          name: string
+          description: string | null
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          name: string
+          description?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          name?: string
+          description?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       daily_habits: {
         Row: {
@@ -185,6 +220,7 @@ export type Database = {
           created_at: string | null
           day_of_week: number | null
           id: string
+          meal_program_id: string
           meal_type: string
           option_a_description: string | null
           option_a_image_url: string | null
@@ -201,6 +237,7 @@ export type Database = {
           created_at?: string | null
           day_of_week?: number | null
           id?: string
+          meal_program_id: string
           meal_type: string
           option_a_description?: string | null
           option_a_image_url?: string | null
@@ -217,6 +254,7 @@ export type Database = {
           created_at?: string | null
           day_of_week?: number | null
           id?: string
+          meal_program_id?: string
           meal_type?: string
           option_a_description?: string | null
           option_a_image_url?: string | null
@@ -227,7 +265,15 @@ export type Database = {
           updated_at?: string | null
           week_start_date?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "meal_options_meal_program_id_fkey"
+            columns: ["meal_program_id"]
+            isOneToOne: false
+            referencedRelation: "meal_programs"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       meal_selections: {
         Row: {
@@ -472,6 +518,7 @@ export type Streak = Tables<'streaks'>
 export type WeeklyExercise = Tables<'weekly_exercise'>
 export type NotificationLog = Tables<'notification_logs'>
 export type CohortParticipant = Tables<'cohort_participants'>
+export type MealProgram = Tables<'meal_programs'>
 
 // Profile with cohort
 export type ProfileWithCohort = Profile & {

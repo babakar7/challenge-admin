@@ -14,7 +14,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { LogOut, User, ChevronDown } from 'lucide-react'
+import { LogOut, User, ChevronDown, UtensilsCrossed } from 'lucide-react'
 import { ChallengeSwitcher } from './challenge-switcher'
 import { CreateChallengePanel } from '@/components/challenges/create-challenge-panel'
 import type { Profile } from '@/types/database'
@@ -64,6 +64,16 @@ export function Header({ user, cohorts }: HeaderProps) {
             cohorts={cohorts}
             onCreateClick={() => setCreateOpen(true)}
           />
+
+          <div className="h-6 w-px bg-border hidden sm:block" />
+
+          <Link
+            href="/meal-programs"
+            className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <UtensilsCrossed className="h-4 w-4" />
+            <span className="hidden sm:block">Meal Programs</span>
+          </Link>
         </div>
 
         {/* Right: User Menu */}

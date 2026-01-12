@@ -16,6 +16,7 @@ import { updateCohort } from '@/lib/actions/cohorts'
 import { toast } from 'sonner'
 import { format, addDays } from 'date-fns'
 import type { Cohort } from '@/types/database'
+import { ProgramSelector } from '@/components/meal-programs/program-selector'
 
 interface EditChallengePanelProps {
   challenge: Cohort
@@ -28,11 +29,13 @@ export function EditChallengePanel({ challenge, open, onOpenChange }: EditChalle
   const [loading, setLoading] = useState(false)
   const [name, setName] = useState(challenge.name)
   const [startDate, setStartDate] = useState(challenge.start_date)
+  const [mealProgramId, setMealProgramId] = useState<string | null>(challenge.meal_program_id)
 
   useEffect(() => {
     if (open) {
       setName(challenge.name)
       setStartDate(challenge.start_date)
+      setMealProgramId(challenge.meal_program_id)
     }
   }, [open, challenge])
 
@@ -45,6 +48,9 @@ export function EditChallengePanel({ challenge, open, onOpenChange }: EditChalle
     const formData = new FormData()
     formData.append('name', name)
     formData.append('start_date', startDate)
+    if (mealProgramId) {
+      formData.append('meal_program_id', mealProgramId)
+    }
 
     const result = await updateCohort(challenge.id, formData)
 
@@ -97,6 +103,18 @@ export function EditChallengePanel({ challenge, open, onOpenChange }: EditChalle
                 Challenge ends on {endDate} (28 days)
               </p>
             )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="edit-meal-program">Meal Program (optional)</Label>
+            <ProgramSelector
+              value={mealProgramId}
+              onChange={setMealProgramId}
+              disabled={loading}
+            />
+            <p className="text-xs text-muted-foreground">
+              Select a meal program to use for this challenge
+            </p>
           </div>
 
           <div className="flex gap-3 pt-4">

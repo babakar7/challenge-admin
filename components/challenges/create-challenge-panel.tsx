@@ -15,6 +15,7 @@ import { Label } from '@/components/ui/label'
 import { createCohort } from '@/lib/actions/cohorts'
 import { toast } from 'sonner'
 import { format, addDays } from 'date-fns'
+import { ProgramSelector } from '@/components/meal-programs/program-selector'
 
 interface CreateChallengePanelProps {
   open: boolean
@@ -26,6 +27,7 @@ export function CreateChallengePanel({ open, onOpenChange }: CreateChallengePane
   const [loading, setLoading] = useState(false)
   const [name, setName] = useState('')
   const [startDate, setStartDate] = useState('')
+  const [mealProgramId, setMealProgramId] = useState<string | null>(null)
 
   const endDate = startDate ? format(addDays(new Date(startDate), 27), 'MMM d, yyyy') : ''
 
@@ -36,6 +38,9 @@ export function CreateChallengePanel({ open, onOpenChange }: CreateChallengePane
     const formData = new FormData()
     formData.append('name', name)
     formData.append('start_date', startDate)
+    if (mealProgramId) {
+      formData.append('meal_program_id', mealProgramId)
+    }
 
     const result = await createCohort(formData)
 
@@ -50,6 +55,7 @@ export function CreateChallengePanel({ open, onOpenChange }: CreateChallengePane
     onOpenChange(false)
     setName('')
     setStartDate('')
+    setMealProgramId(null)
 
     if (result.data) {
       router.push(`/challenges/${result.data.id}`)
@@ -95,6 +101,18 @@ export function CreateChallengePanel({ open, onOpenChange }: CreateChallengePane
                 Challenge ends on {endDate} (28 days)
               </p>
             )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="meal_program">Meal Program (optional)</Label>
+            <ProgramSelector
+              value={mealProgramId}
+              onChange={setMealProgramId}
+              disabled={loading}
+            />
+            <p className="text-xs text-muted-foreground">
+              Select a meal program to use for this challenge
+            </p>
           </div>
 
           <div className="flex gap-3 pt-4">

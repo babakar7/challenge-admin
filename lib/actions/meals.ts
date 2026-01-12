@@ -72,6 +72,7 @@ export async function updateMealOption(id: string, formData: FormData) {
 }
 
 export async function createMealOption(
+  mealProgramId: string,
   weekStart: string,
   challengeWeek: number,
   dayOfWeek: number,
@@ -101,7 +102,8 @@ export async function createMealOption(
   const { error } = await supabase
     .from('meal_options')
     .insert({
-      week_start_date: weekStart,
+      meal_program_id: mealProgramId,
+      week_start_date: weekStart || null,
       challenge_week: challengeWeek,
       day_of_week: dayOfWeek,
       challenge_day: challengeDay,
@@ -118,6 +120,7 @@ export async function createMealOption(
     return { error: error.message }
   }
 
-  revalidatePath('/meals')
+  revalidatePath('/meal-programs')
+  revalidatePath(`/meal-programs/${mealProgramId}`)
   return { success: true }
 }

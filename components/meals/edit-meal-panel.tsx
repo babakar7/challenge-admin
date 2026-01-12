@@ -27,7 +27,7 @@ interface MealOption {
 interface EditMealPanelProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  cohortId: string
+  mealProgramId: string
   week: number
   day: number
   mealType: 'lunch' | 'dinner'
@@ -39,7 +39,7 @@ interface EditMealPanelProps {
 export function EditMealPanel({
   open,
   onOpenChange,
-  cohortId,
+  mealProgramId,
   week,
   day,
   mealType,
@@ -79,6 +79,7 @@ export function EditMealPanel({
       // Calculate day_of_week (0-6, where 0 is Sunday)
       const dayOfWeek = day === 7 ? 0 : day // Convert our 1-7 (Mon-Sun) to 0-6 (Sun-Sat)
       result = await createMealOption(
+        mealProgramId,
         weekStartDate ? format(weekStartDate, 'yyyy-MM-dd') : '',
         week,
         dayOfWeek,
