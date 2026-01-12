@@ -74,6 +74,54 @@ export type Database = {
         }
         Relationships: []
       }
+      cohort_participants: {
+        Row: {
+          id: string
+          user_id: string
+          cohort_id: string
+          joined_at: string
+          left_at: string | null
+          status: 'active' | 'completed' | 'left'
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          cohort_id: string
+          joined_at?: string
+          left_at?: string | null
+          status?: 'active' | 'completed' | 'left'
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          cohort_id?: string
+          joined_at?: string
+          left_at?: string | null
+          status?: 'active' | 'completed' | 'left'
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cohort_participants_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cohort_participants_cohort_id_fkey"
+            columns: ["cohort_id"]
+            isOneToOne: false
+            referencedRelation: "cohorts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       daily_habits: {
         Row: {
           created_at: string | null
@@ -423,6 +471,7 @@ export type CheckIn = Tables<'check_ins'>
 export type Streak = Tables<'streaks'>
 export type WeeklyExercise = Tables<'weekly_exercise'>
 export type NotificationLog = Tables<'notification_logs'>
+export type CohortParticipant = Tables<'cohort_participants'>
 
 // Profile with cohort
 export type ProfileWithCohort = Profile & {

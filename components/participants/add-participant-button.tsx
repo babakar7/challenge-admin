@@ -44,7 +44,11 @@ export function AddParticipantButton({ cohortId }: AddParticipantButtonProps) {
       return
     }
 
-    toast.success('Participant added successfully')
+    if (result.existing) {
+      toast.success('Existing participant moved to this challenge')
+    } else {
+      toast.success('Participant added successfully')
+    }
     setLoading(false)
     setOpen(false)
     setEmail('')

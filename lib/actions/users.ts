@@ -46,9 +46,75 @@ export async function createUser(formData: FormData) {
     return { error: input.error.issues[0].message }
   }
 
-  // Create auth user with admin client
   const adminClient = createAdminClient()
 
+  // Check if user already exists
+  const { data: existingUsers } = await adminClient
+    .from('profiles')
+    .select('id, full_name')
+    .eq('email', input.data.email)
+    .limit(1)
+
+  if (existingUsers && existingUsers.length > 0) {
+    // User exists - update their cohort and track participation history
+    const existingUser = existingUsers[0]
+
+    // Mark any previous active participation as "completed"
+    const { error: completeError } = await adminClient
+      .from('cohort_participants')
+      .update({
+        status: 'completed',
+        left_at: new Date().toISOString()
+      })
+      .eq('user_id', existingUser.id)
+      .eq('status', 'active')
+
+    if (completeError) {
+      console.error('Error completing previous participation:', completeError)
+    }
+
+    // Create new participation record if cohort_id provided
+    if (input.data.cohort_id) {
+      const { error: participationError } = await adminClient
+        .from('cohort_participants')
+        .insert({
+          user_id: existingUser.id,
+          cohort_id: input.data.cohort_id,
+          status: 'active',
+        })
+
+      if (participationError) {
+        // Might already exist if re-adding to same cohort - just update status
+        if (participationError.code === '23505') {
+          await adminClient
+            .from('cohort_participants')
+            .update({ status: 'active', left_at: null })
+            .eq('user_id', existingUser.id)
+            .eq('cohort_id', input.data.cohort_id)
+        } else {
+          return { error: participationError.message }
+        }
+      }
+    }
+
+    // Update profile with current cohort (for quick access)
+    const { error: updateError } = await adminClient
+      .from('profiles')
+      .update({
+        full_name: input.data.full_name || existingUser.full_name,
+        cohort_id: input.data.cohort_id || null,
+      })
+      .eq('id', existingUser.id)
+
+    if (updateError) {
+      return { error: updateError.message }
+    }
+
+    revalidatePath('/challenges')
+    return { data: { id: existingUser.id, email: input.data.email }, existing: true }
+  }
+
+  // Create new auth user
   const { data: authData, error: authError } = await adminClient.auth.admin.createUser({
     email: input.data.email,
     password: 'challenge', // Default password - user should change on first login
@@ -74,7 +140,22 @@ export async function createUser(formData: FormData) {
     }
   }
 
-  revalidatePath('/users')
+  // Create participation record for new user
+  if (input.data.cohort_id) {
+    const { error: participationError } = await adminClient
+      .from('cohort_participants')
+      .insert({
+        user_id: authData.user.id,
+        cohort_id: input.data.cohort_id,
+        status: 'active',
+      })
+
+    if (participationError) {
+      console.error('Error creating participation record:', participationError)
+    }
+  }
+
+  revalidatePath('/challenges')
   return { data: authData.user }
 }
 

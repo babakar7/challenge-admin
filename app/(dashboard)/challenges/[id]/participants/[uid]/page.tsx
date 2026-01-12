@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-import { ArrowLeft, Flame, Mail, Calendar } from 'lucide-react'
+import { ArrowLeft, Flame, Mail, Calendar, Trophy, CheckCircle2, Clock } from 'lucide-react'
 import { format, formatDistanceToNow } from 'date-fns'
 
 interface UserDetailPageProps {
@@ -18,6 +18,7 @@ async function getUserData(userId: string, cohortId: string) {
     { data: streak },
     { data: selections },
     { data: mealOptions },
+    { data: participationHistory },
   ] = await Promise.all([
     supabase
       .from('profiles')
@@ -50,14 +51,27 @@ async function getUserData(userId: string, cohortId: string) {
     supabase
       .from('meal_options')
       .select('*'),
+    supabase
+      .from('cohort_participants')
+      .select(`
+        *,
+        cohorts (
+          id,
+          name,
+          start_date,
+          end_date
+        )
+      `)
+      .eq('user_id', userId)
+      .order('joined_at', { ascending: false }),
   ])
 
-  return { user, checkIns, habits, streak, selections, mealOptions }
+  return { user, checkIns, habits, streak, selections, mealOptions, participationHistory }
 }
 
 export default async function UserDetailPage({ params }: UserDetailPageProps) {
   const { id: cohortId, uid: userId } = await params
-  const { user, checkIns, habits, streak, selections, mealOptions } = await getUserData(userId, cohortId)
+  const { user, checkIns, habits, streak, selections, mealOptions, participationHistory } = await getUserData(userId, cohortId)
 
   if (!user) {
     notFound()
@@ -113,6 +127,67 @@ export default async function UserDetailPage({ params }: UserDetailPageProps) {
           </div>
         </div>
       </div>
+
+      {/* Challenge History */}
+      {participationHistory && participationHistory.length > 0 && (
+        <div className="bg-card rounded-xl border border-border p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <Trophy className="h-4 w-4 text-primary" />
+            <h2 className="font-medium text-foreground">Challenge History</h2>
+          </div>
+          <div className="space-y-3">
+            {participationHistory.map((participation) => {
+              const cohort = participation.cohorts as { id: string; name: string; start_date: string; end_date: string } | null
+              const isCurrentChallenge = cohort?.id === cohortId
+              return (
+                <div
+                  key={participation.id}
+                  className={`flex items-center justify-between p-3 rounded-lg ${
+                    isCurrentChallenge ? 'bg-primary/5 border border-primary/20' : 'bg-accent/50'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    {participation.status === 'completed' ? (
+                      <CheckCircle2 className="h-4 w-4 text-green-600" />
+                    ) : participation.status === 'active' ? (
+                      <Clock className="h-4 w-4 text-blue-500" />
+                    ) : (
+                      <div className="h-4 w-4 rounded-full border-2 border-muted-foreground" />
+                    )}
+                    <div>
+                      <p className="text-sm font-medium text-foreground">
+                        {cohort?.name || 'Unknown Challenge'}
+                        {isCurrentChallenge && (
+                          <span className="ml-2 text-xs text-primary">(Current)</span>
+                        )}
+                      </p>
+                      {cohort && (
+                        <p className="text-xs text-muted-foreground">
+                          {format(new Date(cohort.start_date), 'MMM d')} - {format(new Date(cohort.end_date), 'MMM d, yyyy')}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <span className={`text-xs px-2 py-1 rounded-full ${
+                      participation.status === 'completed'
+                        ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                        : participation.status === 'active'
+                        ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                        : 'bg-muted text-muted-foreground'
+                    }`}>
+                      {participation.status === 'completed' ? 'Completed' : participation.status === 'active' ? 'In Progress' : 'Left'}
+                    </span>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Joined {format(new Date(participation.joined_at), 'MMM d, yyyy')}
+                    </p>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
 
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Check-ins */}

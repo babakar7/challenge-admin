@@ -1,14 +1,27 @@
 # Revive Admin Dashboard - Project Status
 
-## Current Phase: NAVIGATION REDESIGN COMPLETED
+## Current Phase: PARTICIPATION HISTORY TRACKING COMPLETED
 
 ## Recent Changes (January 2026)
+
+### Participation History Tracking
+- [x] Created `cohort_participants` junction table for tracking user participation across challenges
+- [x] Added RLS policies for cohort_participants table
+- [x] Updated createUser action to track participation history
+- [x] User detail page now shows challenge history with status (active, completed, left)
+- [x] Existing users can be added to new challenges (moves from previous challenge)
+
+### RLS & Auth Fixes
+- [x] Fixed RLS infinite recursion with security definer functions
+- [x] Added INSERT/UPDATE/DELETE policies on cohorts table for super_admins
+- [x] Added admin view policies for profiles table
+- [x] Created `is_admin()` and `is_super_admin()` functions
 
 ### Challenge-Centric Navigation Redesign
 - [x] Removed sidebar navigation
 - [x] Added challenge switcher dropdown in header
 - [x] Landing page redirects to most recent challenge
-- [x] Challenge pages use horizontal tabs (Overview | Participants | Meals | Selections)
+- [x] Challenge pages use horizontal tabs (Overview | Participants | Selections | Meals)
 - [x] Selections now display actual meal names instead of A/B
 - [x] User details accessible via Participants > User drill-down
 - [x] All create/edit flows use slide-over panels
