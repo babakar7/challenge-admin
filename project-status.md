@@ -15,6 +15,9 @@
 - [x] Selections page filters meal options by cohort's assigned program
 - [x] Added "Meal Programs" nav link in header
 - [x] Implemented duplicate program functionality
+- [x] Added INSERT/UPDATE/DELETE RLS policies for `meal_options` table
+- [x] Fixed empty date string bug when creating meals in programs
+- [x] Added image URL fields to meal options form (Option A & B)
 
 ### Participation History Tracking
 - [x] Created `cohort_participants` junction table for tracking user participation across challenges
