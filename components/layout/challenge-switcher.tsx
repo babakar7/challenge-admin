@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { ChevronDown, Plus, Calendar } from 'lucide-react'
 import { format } from 'date-fns'
+import { fr } from 'date-fns/locale'
 
 interface Cohort {
   id: string
@@ -52,7 +53,7 @@ export function ChallengeSwitcher({ cohorts, onCreateClick }: ChallengeSwitcherP
         >
           <Calendar className="h-4 w-4 text-primary shrink-0" />
           <span className="text-sm font-medium text-foreground truncate">
-            {currentCohort?.name ?? 'Select Challenge'}
+            {currentCohort?.name ?? 'Sélectionner un challenge'}
           </span>
           <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0" />
         </Button>
@@ -60,7 +61,7 @@ export function ChallengeSwitcher({ cohorts, onCreateClick }: ChallengeSwitcherP
       <DropdownMenuContent align="start" className="w-[280px]">
         {cohorts.length === 0 ? (
           <div className="px-2 py-4 text-center text-sm text-muted-foreground">
-            No challenges yet
+            Aucun challenge
           </div>
         ) : (
           cohorts.map((cohort) => (
@@ -72,12 +73,12 @@ export function ChallengeSwitcher({ cohorts, onCreateClick }: ChallengeSwitcherP
               <div className="flex flex-col gap-0.5 min-w-0">
                 <span className="text-sm font-medium truncate">{cohort.name}</span>
                 <span className="text-xs text-muted-foreground">
-                  {format(new Date(cohort.start_date), 'MMM d, yyyy')}
+                  {format(new Date(cohort.start_date), 'd MMM yyyy', { locale: fr })}
                 </span>
               </div>
               {cohort.is_active && (
                 <span className="shrink-0 ml-2 px-1.5 py-0.5 text-[10px] font-medium bg-primary/10 text-primary rounded">
-                  Active
+                  Actif
                 </span>
               )}
             </DropdownMenuItem>
@@ -86,7 +87,7 @@ export function ChallengeSwitcher({ cohorts, onCreateClick }: ChallengeSwitcherP
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleCreate} className="cursor-pointer">
           <Plus className="mr-2 h-4 w-4" />
-          Create Challenge
+          Créer un challenge
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

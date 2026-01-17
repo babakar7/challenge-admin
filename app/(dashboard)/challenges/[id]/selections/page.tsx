@@ -9,10 +9,10 @@ interface SelectionsPageProps {
 async function getSelections(cohortId: string) {
   const supabase = await createClient()
 
-  // Get the cohort to find its meal_program_id
+  // Get the cohort to find its meal_program_id and duration
   const { data: cohort } = await supabase
     .from('cohorts')
-    .select('meal_program_id')
+    .select('meal_program_id, duration_weeks')
     .eq('id', cohortId)
     .single()
 
@@ -42,12 +42,12 @@ async function getSelections(cohortId: string) {
     mealOptions = data ?? []
   }
 
-  return { selections: selections ?? [], mealOptions }
+  return { selections: selections ?? [], mealOptions, durationWeeks: cohort?.duration_weeks ?? 4 }
 }
 
 export default async function SelectionsPage({ params }: SelectionsPageProps) {
   const { id: cohortId } = await params
-  const { selections, mealOptions } = await getSelections(cohortId)
+  const { selections, mealOptions, durationWeeks } = await getSelections(cohortId)
 
   // Group selections by week
   const selectionsByWeek = selections.reduce((acc, selection) => {
@@ -62,27 +62,27 @@ export default async function SelectionsPage({ params }: SelectionsPageProps) {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <p className="text-sm text-muted-foreground">
-          {selections.length} total selection{selections.length !== 1 ? 's' : ''}
+          {selections.length} sélection{selections.length !== 1 ? 's' : ''} au total
         </p>
         <SelectionExport cohortId={cohortId} />
       </div>
 
       {Object.keys(selectionsByWeek).length === 0 ? (
         <div className="text-center py-12 bg-card rounded-xl border border-border">
-          <p className="text-muted-foreground">No meal selections yet</p>
+          <p className="text-muted-foreground">Aucune sélection de repas</p>
           <p className="text-sm text-muted-foreground mt-1">
-            Participants will submit their selections through the mobile app
+            Les participants soumettront leurs sélections via l'application mobile
           </p>
         </div>
       ) : (
         <div className="space-y-8">
-          {[1, 2, 3, 4].map((week) => {
+          {Array.from({ length: durationWeeks }, (_, i) => i + 1).map((week) => {
             const weekSelections = selectionsByWeek[week]
             if (!weekSelections || weekSelections.length === 0) return null
 
             return (
               <div key={week}>
-                <h2 className="text-lg font-medium text-foreground mb-4">Week {week}</h2>
+                <h2 className="text-lg font-medium text-foreground mb-4">Semaine {week}</h2>
                 <SelectionsTable
                   selections={weekSelections}
                   mealOptions={mealOptions}

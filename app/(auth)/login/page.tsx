@@ -50,7 +50,7 @@ function LoginForm() {
           Revive
         </h1>
         <p className="text-sm text-muted-foreground">
-          Admin Dashboard
+          Tableau de bord
         </p>
       </div>
 
@@ -60,7 +60,7 @@ function LoginForm() {
           {(error || unauthorizedError) && (
             <div className="p-3 text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-lg">
               {unauthorizedError
-                ? 'You do not have admin access to this dashboard.'
+                ? 'Vous n\'avez pas accès à ce tableau de bord.'
                 : error
               }
             </div>
@@ -68,12 +68,12 @@ function LoginForm() {
 
           <div className="space-y-2">
             <Label htmlFor="email" className="text-sm font-medium text-foreground">
-              Email
+              Courriel
             </Label>
             <Input
               id="email"
               type="email"
-              placeholder="admin@example.com"
+              placeholder="admin@exemple.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -84,7 +84,7 @@ function LoginForm() {
 
           <div className="space-y-2">
             <Label htmlFor="password" className="text-sm font-medium text-foreground">
-              Password
+              Mot de passe
             </Label>
             <Input
               id="password"
@@ -120,10 +120,10 @@ function LoginForm() {
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                   />
                 </svg>
-                Signing in...
+                Connexion...
               </span>
             ) : (
-              'Sign in'
+              'Connexion'
             )}
           </Button>
         </form>
@@ -131,7 +131,7 @@ function LoginForm() {
 
       {/* Footer */}
       <p className="text-center text-xs text-muted-foreground mt-8">
-        28-Day Weight Loss Challenge
+        Challenge Perte de Poids
       </p>
     </div>
   )

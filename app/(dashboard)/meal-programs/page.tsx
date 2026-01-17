@@ -30,9 +30,9 @@ export default async function MealProgramsPage() {
     <div className="max-w-5xl mx-auto px-6 py-8">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-semibold text-foreground">Meal Programs</h1>
+          <h1 className="text-2xl font-semibold text-foreground">Plans alimentaires</h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Create and manage 28-day meal plans that can be assigned to challenges
+            Créer et gérer des plans alimentaires qui peuvent être assignés aux challenges
           </p>
         </div>
         {isSuperAdmin && <CreateProgramButton />}

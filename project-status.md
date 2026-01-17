@@ -1,8 +1,25 @@
 # Revive Admin Dashboard - Project Status
 
-## Current Phase: MEAL PROGRAMS FEATURE COMPLETED
+## Current Phase: UX IMPROVEMENTS COMPLETED
 
 ## Recent Changes (January 2026)
+
+### Configurable Challenge Duration
+- [x] Added `duration_weeks` column to cohorts table (default: 4)
+- [x] Duration dropdown (1-8 weeks) in create/edit challenge panels
+- [x] Dynamic end date calculation based on duration
+- [x] Dynamic week tabs in meals page
+- [x] Dynamic week sections in selections page
+- [x] Overview page shows "of X weeks" dynamically
+
+### UX & Data Display Improvements
+- [x] Added meal image previews to meal cards (with fallback for broken images)
+- [x] Added image preview in edit meal form
+- [x] Improved empty states with icons and guidance (participants, selections, meals)
+- [x] Added participant search (filter by name or email)
+- [x] Added streak filter dropdown (all, active streak, no streak)
+- [x] Added weekly exercise display to user detail page (3x/week goal status)
+- [x] Added admin RLS policies for `meal_selections` and `weekly_exercise`
 
 ### Meal Programs Feature
 - [x] Created `meal_programs` table with RLS policies
@@ -99,6 +116,12 @@
 - [x] Update selections to filter by program
 - [x] Add Meal Programs link to header
 
+### Phase 10: UX & Data Display Improvements - COMPLETED
+- [x] Meal image previews in cards and edit form
+- [x] Improved empty states with icons
+- [x] Participant search and streak filter
+- [x] Weekly exercise goal display on user detail
+
 ---
 
 ## Routes
@@ -142,4 +165,4 @@ npm start      # Run production build
 ---
 
 ## Last Updated
-January 12, 2026
+January 15, 2026

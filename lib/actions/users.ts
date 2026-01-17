@@ -6,7 +6,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { z } from 'zod'
 
 const createUserSchema = z.object({
-  email: z.string().email('Invalid email'),
+  email: z.string().email('Courriel invalide'),
   full_name: z.string().optional(),
   cohort_id: z.string().uuid().optional().nullable(),
 })
@@ -33,7 +33,7 @@ export async function createUser(formData: FormData) {
   const { authorized } = await verifySuperAdmin()
 
   if (!authorized) {
-    return { error: 'Unauthorized' }
+    return { error: 'Non autorisé' }
   }
 
   const input = createUserSchema.safeParse({
@@ -163,7 +163,7 @@ export async function updateUser(id: string, formData: FormData) {
   const { authorized, supabase } = await verifySuperAdmin()
 
   if (!authorized) {
-    return { error: 'Unauthorized' }
+    return { error: 'Non autorisé' }
   }
 
   const fullName = formData.get('full_name') as string
@@ -190,7 +190,7 @@ export async function assignUserToCohort(userId: string, cohortId: string | null
   const { authorized, supabase } = await verifySuperAdmin()
 
   if (!authorized) {
-    return { error: 'Unauthorized' }
+    return { error: 'Non autorisé' }
   }
 
   const { error } = await supabase
@@ -210,7 +210,7 @@ export async function deleteUser(id: string) {
   const { authorized } = await verifySuperAdmin()
 
   if (!authorized) {
-    return { error: 'Unauthorized' }
+    return { error: 'Non autorisé' }
   }
 
   // Use admin client to delete auth user (profile will cascade)

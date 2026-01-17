@@ -40,7 +40,7 @@ export function CreateProgramButton() {
       return
     }
 
-    toast.success('Meal program created')
+    toast.success('Plan alimentaire créé')
     setLoading(false)
     setOpen(false)
     setName('')
@@ -57,24 +57,24 @@ export function CreateProgramButton() {
     <>
       <Button onClick={() => setOpen(true)} size="sm">
         <Plus className="h-4 w-4 mr-1.5" />
-        Create Program
+        Créer un plan
       </Button>
 
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetContent className="sm:max-w-md">
           <SheetHeader>
-            <SheetTitle>Create Meal Program</SheetTitle>
+            <SheetTitle>Créer un plan alimentaire</SheetTitle>
             <SheetDescription>
-              Create a new 28-day meal program that can be assigned to challenges.
+              Créer un nouveau plan alimentaire qui peut être assigné aux challenges.
             </SheetDescription>
           </SheetHeader>
 
           <form onSubmit={handleSubmit} className="mt-6 space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="name">Name</Label>
+              <Label htmlFor="name">Nom</Label>
               <Input
                 id="name"
-                placeholder="e.g., Standard Program"
+                placeholder="ex. Programme Standard"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
@@ -83,10 +83,10 @@ export function CreateProgramButton() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="description">Description (optional)</Label>
+              <Label htmlFor="description">Description (optionnel)</Label>
               <Textarea
                 id="description"
-                placeholder="Brief description of this meal program..."
+                placeholder="Brève description de ce plan alimentaire..."
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 disabled={loading}
@@ -102,10 +102,10 @@ export function CreateProgramButton() {
                 disabled={loading}
                 className="flex-1"
               >
-                Cancel
+                Annuler
               </Button>
               <Button type="submit" disabled={loading} className="flex-1">
-                {loading ? 'Creating...' : 'Create'}
+                {loading ? 'Création...' : 'Créer'}
               </Button>
             </div>
           </form>

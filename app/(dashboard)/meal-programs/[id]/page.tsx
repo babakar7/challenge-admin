@@ -6,7 +6,8 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import { ArrowLeft, Pencil, Settings } from 'lucide-react'
+import { ArrowLeft, Pencil, Settings, ImageOff } from 'lucide-react'
+import Image from 'next/image'
 import { EditMealPanel } from '@/components/meals/edit-meal-panel'
 import { EditProgramPanel } from '@/components/meal-programs/edit-program-panel'
 
@@ -29,7 +30,7 @@ interface MealProgram {
   description: string | null
 }
 
-const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+const DAYS = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']
 
 export default function MealProgramDetailPage() {
   const params = useParams()
@@ -98,7 +99,7 @@ export default function MealProgramDetailPage() {
   if (!program) {
     return (
       <div className="max-w-5xl mx-auto px-6 py-8">
-        <p className="text-muted-foreground">Program not found</p>
+        <p className="text-muted-foreground">Programme non trouvé</p>
       </div>
     )
   }
@@ -111,7 +112,7 @@ export default function MealProgramDetailPage() {
         className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6"
       >
         <ArrowLeft className="h-4 w-4" />
-        Back to Meal Programs
+        Retour aux Plans alimentaires
       </Link>
 
       {/* Header */}
@@ -124,7 +125,7 @@ export default function MealProgramDetailPage() {
         </div>
         <Button variant="outline" size="sm" onClick={() => setEditProgram(true)}>
           <Settings className="h-4 w-4 mr-1.5" />
-          Edit Details
+          Modifier les détails
         </Button>
       </div>
 
@@ -141,7 +142,7 @@ export default function MealProgramDetailPage() {
               selectedWeek === week && 'bg-primary text-primary-foreground'
             )}
           >
-            Week {week}
+            Semaine {week}
           </Button>
         ))}
       </div>
@@ -157,20 +158,20 @@ export default function MealProgramDetailPage() {
             <div key={dayName} className="bg-card rounded-xl border border-border p-5">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-medium text-foreground">{dayName}</h3>
-                <span className="text-xs text-muted-foreground">Day {dayNumber}</span>
+                <span className="text-xs text-muted-foreground">Jour {dayNumber}</span>
               </div>
 
               <div className="grid gap-4 md:grid-cols-2">
                 {/* Lunch */}
                 <MealCard
-                  mealType="Lunch"
+                  mealType="Déjeuner"
                   meal={lunchMeal}
                   onEdit={() => handleEdit(dayNumber, 'lunch')}
                 />
 
                 {/* Dinner */}
                 <MealCard
-                  mealType="Dinner"
+                  mealType="Dîner"
                   meal={dinnerMeal}
                   onEdit={() => handleEdit(dayNumber, 'dinner')}
                 />
@@ -228,24 +229,62 @@ function MealCard({
 
       {meal ? (
         <div className="space-y-3">
-          <div>
-            <p className="text-xs text-muted-foreground mb-0.5">Option A</p>
-            <p className="text-sm font-medium text-foreground">{meal.option_a_name}</p>
-            {meal.option_a_description && (
-              <p className="text-xs text-muted-foreground mt-0.5">{meal.option_a_description}</p>
-            )}
-          </div>
-          <div>
-            <p className="text-xs text-muted-foreground mb-0.5">Option B</p>
-            <p className="text-sm font-medium text-foreground">{meal.option_b_name}</p>
-            {meal.option_b_description && (
-              <p className="text-xs text-muted-foreground mt-0.5">{meal.option_b_description}</p>
-            )}
-          </div>
+          <MealOptionDisplay
+            label="Option A"
+            name={meal.option_a_name}
+            description={meal.option_a_description}
+            imageUrl={meal.option_a_image_url}
+          />
+          <MealOptionDisplay
+            label="Option B"
+            name={meal.option_b_name}
+            description={meal.option_b_description}
+            imageUrl={meal.option_b_image_url}
+          />
         </div>
       ) : (
-        <p className="text-sm text-muted-foreground">No meal options set</p>
+        <p className="text-sm text-muted-foreground">Aucune option de repas définie</p>
       )}
+    </div>
+  )
+}
+
+function MealOptionDisplay({
+  label,
+  name,
+  description,
+  imageUrl,
+}: {
+  label: string
+  name: string
+  description: string | null
+  imageUrl: string | null
+}) {
+  const [imageError, setImageError] = useState(false)
+
+  return (
+    <div className="flex gap-3">
+      {imageUrl && !imageError ? (
+        <div className="relative h-12 w-12 shrink-0 rounded-md overflow-hidden bg-muted">
+          <img
+            src={imageUrl}
+            alt={name}
+            className="h-full w-full object-cover"
+            onError={() => setImageError(true)}
+          />
+        </div>
+      ) : imageUrl ? (
+        <div className="h-12 w-12 shrink-0 rounded-md bg-muted flex items-center justify-center">
+          <ImageOff className="h-4 w-4 text-muted-foreground" />
+        </div>
+      ) : null}
+      <div className="flex-1 min-w-0">
+        <p className="text-xs text-muted-foreground mb-0.5">{label}</p>
+        <p className="text-sm font-medium text-foreground truncate">{name}</p>
+        {description && (
+          <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">{description}</p>
+        )}
+      </div>
     </div>
   )
 }

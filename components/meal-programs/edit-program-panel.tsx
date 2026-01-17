@@ -61,7 +61,7 @@ export function EditProgramPanel({
       return
     }
 
-    toast.success('Program updated')
+    toast.success('Plan alimentaire mis à jour')
     setLoading(false)
     onSuccess()
   }
@@ -70,15 +70,15 @@ export function EditProgramPanel({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="sm:max-w-md">
         <SheetHeader>
-          <SheetTitle>Edit Meal Program</SheetTitle>
+          <SheetTitle>Modifier le plan alimentaire</SheetTitle>
           <SheetDescription>
-            Update the program name and description.
+            Modifier le nom et la description du plan.
           </SheetDescription>
         </SheetHeader>
 
         <form onSubmit={handleSubmit} className="mt-6 space-y-5">
           <div className="space-y-2">
-            <Label htmlFor="name">Name</Label>
+            <Label htmlFor="name">Nom</Label>
             <Input
               id="name"
               value={name}
@@ -89,7 +89,7 @@ export function EditProgramPanel({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description">Description (optional)</Label>
+            <Label htmlFor="description">Description (optionnel)</Label>
             <Textarea
               id="description"
               value={description}
@@ -107,10 +107,10 @@ export function EditProgramPanel({
               disabled={loading}
               className="flex-1"
             >
-              Cancel
+              Annuler
             </Button>
             <Button type="submit" disabled={loading} className="flex-1">
-              {loading ? 'Saving...' : 'Save'}
+              {loading ? 'Enregistrement...' : 'Enregistrer'}
             </Button>
           </div>
         </form>

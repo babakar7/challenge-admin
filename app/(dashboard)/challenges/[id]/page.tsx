@@ -23,11 +23,13 @@ async function getChallengeStats(id: string) {
 
   // Calculate current week
   let currentWeek = 0
+  const durationWeeks = challenge?.duration_weeks ?? 4
   if (challenge) {
     const today = new Date()
     const startDate = new Date(challenge.start_date)
     const daysDiff = differenceInDays(today, startDate)
-    if (daysDiff >= 0 && daysDiff < 28) {
+    const totalDays = durationWeeks * 7
+    if (daysDiff >= 0 && daysDiff < totalDays) {
       currentWeek = Math.floor(daysDiff / 7) + 1
     }
   }
@@ -42,6 +44,7 @@ async function getChallengeStats(id: string) {
     participantCount: participantCount ?? 0,
     selectionsCount: selectionsCount ?? 0,
     currentWeek,
+    durationWeeks,
     adherenceRate,
   }
 }
@@ -57,26 +60,26 @@ export default async function OverviewPage({ params }: OverviewPageProps) {
         <StatCard
           title="Participants"
           value={stats.participantCount}
-          description="Enrolled in this challenge"
+          description="Inscrits à ce challenge"
           icon={Users}
         />
         <StatCard
-          title="Current Week"
-          value={stats.currentWeek > 0 ? `Week ${stats.currentWeek}` : 'Not Started'}
-          description={stats.currentWeek > 0 ? `of 4 weeks` : 'Challenge hasn\'t begun'}
+          title="Semaine en cours"
+          value={stats.currentWeek > 0 ? `Semaine ${stats.currentWeek}` : 'Non commencé'}
+          description={stats.currentWeek > 0 ? `sur ${stats.durationWeeks} semaines` : 'Le challenge n\'a pas encore commencé'}
           icon={Calendar}
           isText
         />
         <StatCard
-          title="Meal Selections"
+          title="Sélections repas"
           value={stats.selectionsCount}
-          description="Weekly selections submitted"
+          description="Sélections hebdomadaires soumises"
           icon={UtensilsCrossed}
         />
         <StatCard
-          title="Meal Adherence"
+          title="Adhérence repas"
           value={`${stats.adherenceRate}%`}
-          description="Following meal plan"
+          description="Suivent le plan alimentaire"
           icon={CheckCircle}
           isText
         />

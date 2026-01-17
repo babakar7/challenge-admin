@@ -47,6 +47,7 @@ export type Database = {
       cohorts: {
         Row: {
           created_at: string | null
+          duration_weeks: number
           end_date: string
           id: string
           is_active: boolean | null
@@ -57,6 +58,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string | null
+          duration_weeks?: number
           end_date: string
           id?: string
           is_active?: boolean | null
@@ -67,6 +69,7 @@ export type Database = {
         }
         Update: {
           created_at?: string | null
+          duration_weeks?: number
           end_date?: string
           id?: string
           is_active?: boolean | null

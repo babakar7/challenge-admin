@@ -7,7 +7,8 @@ import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { format, addDays } from 'date-fns'
-import { ArrowRight, UtensilsCrossed } from 'lucide-react'
+import { fr } from 'date-fns/locale'
+import { ArrowRight, UtensilsCrossed, ImageOff } from 'lucide-react'
 
 interface MealOption {
   id: string
@@ -16,14 +17,17 @@ interface MealOption {
   meal_type: string
   option_a_name: string
   option_a_description: string | null
+  option_a_image_url: string | null
   option_b_name: string
   option_b_description: string | null
+  option_b_image_url: string | null
   meal_program_id: string
 }
 
 interface Cohort {
   id: string
   start_date: string
+  duration_weeks: number | null
   meal_program_id: string | null
   meal_programs?: {
     id: string
@@ -31,7 +35,7 @@ interface Cohort {
   } | null
 }
 
-const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+const DAYS = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']
 
 export default function MealsPage() {
   const params = useParams()
@@ -48,7 +52,7 @@ export default function MealsPage() {
 
       const { data: cohortData } = await supabase
         .from('cohorts')
-        .select('id, start_date, meal_program_id, meal_programs(id, name)')
+        .select('id, start_date, duration_weeks, meal_program_id, meal_programs(id, name)')
         .eq('id', cohortId)
         .single()
 
@@ -106,13 +110,13 @@ export default function MealsPage() {
         <div className="rounded-full bg-muted p-4 mb-4">
           <UtensilsCrossed className="h-8 w-8 text-muted-foreground" />
         </div>
-        <h3 className="text-lg font-medium text-foreground mb-2">No Meal Program Assigned</h3>
+        <h3 className="text-lg font-medium text-foreground mb-2">Aucun plan alimentaire assigné</h3>
         <p className="text-muted-foreground max-w-sm mb-6">
-          This challenge doesn't have a meal program assigned yet. Edit the challenge to select one.
+          Ce challenge n'a pas encore de plan alimentaire assigné. Modifiez le challenge pour en sélectionner un.
         </p>
         <Button asChild variant="outline">
           <Link href="/meal-programs">
-            Browse Meal Programs
+            Parcourir les plans alimentaires
             <ArrowRight className="ml-2 h-4 w-4" />
           </Link>
         </Button>
@@ -128,20 +132,20 @@ export default function MealsPage() {
       {/* Program Header */}
       <div className="flex items-center justify-between bg-secondary/50 rounded-lg px-4 py-3">
         <div>
-          <p className="text-xs text-muted-foreground">Meal Program</p>
-          <p className="font-medium text-foreground">{program?.name ?? 'Unknown Program'}</p>
+          <p className="text-xs text-muted-foreground">Plan alimentaire</p>
+          <p className="font-medium text-foreground">{program?.name ?? 'Programme inconnu'}</p>
         </div>
         <Button asChild variant="outline" size="sm">
           <Link href={`/meal-programs/${cohort.meal_program_id}`}>
-            Edit in Meal Programs
+            Modifier dans Plans alimentaires
             <ArrowRight className="ml-2 h-3.5 w-3.5" />
           </Link>
         </Button>
       </div>
 
       {/* Week Tabs */}
-      <div className="flex items-center gap-2">
-        {[1, 2, 3, 4].map((week) => {
+      <div className="flex items-center gap-2 flex-wrap">
+        {Array.from({ length: cohort.duration_weeks ?? 4 }, (_, i) => i + 1).map((week) => {
           const dates = getWeekDates(week)
           return (
             <Button
@@ -154,10 +158,10 @@ export default function MealsPage() {
                 selectedWeek === week && 'bg-primary text-primary-foreground'
               )}
             >
-              <span className="font-medium">Week {week}</span>
+              <span className="font-medium">Semaine {week}</span>
               {dates && (
                 <span className="text-xs opacity-80">
-                  {format(dates.start, 'MMM d')} - {format(dates.end, 'MMM d')}
+                  {format(dates.start, 'd MMM', { locale: fr })} - {format(dates.end, 'd MMM', { locale: fr })}
                 </span>
               )}
             </Button>
@@ -180,19 +184,19 @@ export default function MealsPage() {
                   <h3 className="font-medium text-foreground">{dayName}</h3>
                   {dayDate && (
                     <p className="text-xs text-muted-foreground">
-                      {format(dayDate, 'MMMM d, yyyy')}
+                      {format(dayDate, 'd MMMM yyyy', { locale: fr })}
                     </p>
                   )}
                 </div>
-                <span className="text-xs text-muted-foreground">Day {dayNumber}</span>
+                <span className="text-xs text-muted-foreground">Jour {dayNumber}</span>
               </div>
 
               <div className="grid gap-4 md:grid-cols-2">
                 {/* Lunch */}
-                <MealCard mealType="Lunch" meal={lunchMeal} />
+                <MealCard mealType="Déjeuner" meal={lunchMeal} />
 
                 {/* Dinner */}
-                <MealCard mealType="Dinner" meal={dinnerMeal} />
+                <MealCard mealType="Dîner" meal={dinnerMeal} />
               </div>
             </div>
           )
@@ -217,24 +221,62 @@ function MealCard({
 
       {meal ? (
         <div className="space-y-3">
-          <div>
-            <p className="text-xs text-muted-foreground mb-0.5">Option A</p>
-            <p className="text-sm font-medium text-foreground">{meal.option_a_name}</p>
-            {meal.option_a_description && (
-              <p className="text-xs text-muted-foreground mt-0.5">{meal.option_a_description}</p>
-            )}
-          </div>
-          <div>
-            <p className="text-xs text-muted-foreground mb-0.5">Option B</p>
-            <p className="text-sm font-medium text-foreground">{meal.option_b_name}</p>
-            {meal.option_b_description && (
-              <p className="text-xs text-muted-foreground mt-0.5">{meal.option_b_description}</p>
-            )}
-          </div>
+          <MealOptionDisplay
+            label="Option A"
+            name={meal.option_a_name}
+            description={meal.option_a_description}
+            imageUrl={meal.option_a_image_url}
+          />
+          <MealOptionDisplay
+            label="Option B"
+            name={meal.option_b_name}
+            description={meal.option_b_description}
+            imageUrl={meal.option_b_image_url}
+          />
         </div>
       ) : (
-        <p className="text-sm text-muted-foreground">No meal options set</p>
+        <p className="text-sm text-muted-foreground">Aucune option de repas définie</p>
       )}
+    </div>
+  )
+}
+
+function MealOptionDisplay({
+  label,
+  name,
+  description,
+  imageUrl,
+}: {
+  label: string
+  name: string
+  description: string | null
+  imageUrl: string | null
+}) {
+  const [imageError, setImageError] = useState(false)
+
+  return (
+    <div className="flex gap-3">
+      {imageUrl && !imageError ? (
+        <div className="relative h-12 w-12 shrink-0 rounded-md overflow-hidden bg-muted">
+          <img
+            src={imageUrl}
+            alt={name}
+            className="h-full w-full object-cover"
+            onError={() => setImageError(true)}
+          />
+        </div>
+      ) : imageUrl ? (
+        <div className="h-12 w-12 shrink-0 rounded-md bg-muted flex items-center justify-center">
+          <ImageOff className="h-4 w-4 text-muted-foreground" />
+        </div>
+      ) : null}
+      <div className="flex-1 min-w-0">
+        <p className="text-xs text-muted-foreground mb-0.5">{label}</p>
+        <p className="text-sm font-medium text-foreground truncate">{name}</p>
+        {description && (
+          <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">{description}</p>
+        )}
+      </div>
     </div>
   )
 }

@@ -45,9 +45,9 @@ export function AddParticipantButton({ cohortId }: AddParticipantButtonProps) {
     }
 
     if (result.existing) {
-      toast.success('Existing participant moved to this challenge')
+      toast.success('Participant existant déplacé vers ce challenge')
     } else {
-      toast.success('Participant added successfully')
+      toast.success('Participant ajouté avec succès')
     }
     setLoading(false)
     setOpen(false)
@@ -60,24 +60,24 @@ export function AddParticipantButton({ cohortId }: AddParticipantButtonProps) {
     <>
       <Button onClick={() => setOpen(true)} size="sm">
         <Plus className="h-4 w-4 mr-1.5" />
-        Add Participant
+        Ajouter un participant
       </Button>
 
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetContent className="sm:max-w-md">
           <SheetHeader>
-            <SheetTitle>Add Participant</SheetTitle>
+            <SheetTitle>Ajouter un participant</SheetTitle>
             <SheetDescription>
-              Add a new participant to this challenge. They will receive login credentials via email.
+              Ajouter un nouveau participant à ce challenge. Il recevra ses identifiants de connexion par courriel.
             </SheetDescription>
           </SheetHeader>
 
           <form onSubmit={handleSubmit} className="mt-6 space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="full_name">Full Name</Label>
+              <Label htmlFor="full_name">Nom complet</Label>
               <Input
                 id="full_name"
-                placeholder="John Doe"
+                placeholder="Jean Dupont"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 required
@@ -86,18 +86,18 @@ export function AddParticipantButton({ cohortId }: AddParticipantButtonProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">Courriel</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="john@example.com"
+                placeholder="jean@exemple.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 disabled={loading}
               />
               <p className="text-xs text-muted-foreground">
-                Default password: "challenge"
+                Mot de passe par défaut : « challenge »
               </p>
             </div>
 
@@ -109,10 +109,10 @@ export function AddParticipantButton({ cohortId }: AddParticipantButtonProps) {
                 disabled={loading}
                 className="flex-1"
               >
-                Cancel
+                Annuler
               </Button>
               <Button type="submit" disabled={loading} className="flex-1">
-                {loading ? 'Adding...' : 'Add'}
+                {loading ? 'Ajout...' : 'Ajouter'}
               </Button>
             </div>
           </form>

@@ -28,25 +28,25 @@ export function SelectionExport({ cohortId }: SelectionExportProps) {
       <DropdownMenuTrigger asChild>
         <Button variant="outline" size="sm">
           <Download className="h-4 w-4 mr-1.5" />
-          Export CSV
+          Exporter CSV
           <ChevronDown className="h-4 w-4 ml-1.5" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem onClick={() => handleExport()}>
-          All Weeks
+          Toutes les semaines
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => handleExport(1)}>
-          Week 1 Only
+          Semaine 1 seulement
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => handleExport(2)}>
-          Week 2 Only
+          Semaine 2 seulement
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => handleExport(3)}>
-          Week 3 Only
+          Semaine 3 seulement
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => handleExport(4)}>
-          Week 4 Only
+          Semaine 4 seulement
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

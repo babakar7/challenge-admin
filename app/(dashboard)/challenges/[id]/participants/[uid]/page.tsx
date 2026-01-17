@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-import { ArrowLeft, Flame, Mail, Calendar, Trophy, CheckCircle2, Clock } from 'lucide-react'
+import { ArrowLeft, Flame, Mail, Calendar, Trophy, CheckCircle2, Clock, Dumbbell, Check, X } from 'lucide-react'
 import { format, formatDistanceToNow } from 'date-fns'
 
 interface UserDetailPageProps {
@@ -19,6 +19,7 @@ async function getUserData(userId: string, cohortId: string) {
     { data: selections },
     { data: mealOptions },
     { data: participationHistory },
+    { data: weeklyExercise },
   ] = await Promise.all([
     supabase
       .from('profiles')
@@ -64,14 +65,19 @@ async function getUserData(userId: string, cohortId: string) {
       `)
       .eq('user_id', userId)
       .order('joined_at', { ascending: false }),
+    supabase
+      .from('weekly_exercise')
+      .select('*')
+      .eq('user_id', userId)
+      .order('week_start_date', { ascending: true }),
   ])
 
-  return { user, checkIns, habits, streak, selections, mealOptions, participationHistory }
+  return { user, checkIns, habits, streak, selections, mealOptions, participationHistory, weeklyExercise }
 }
 
 export default async function UserDetailPage({ params }: UserDetailPageProps) {
   const { id: cohortId, uid: userId } = await params
-  const { user, checkIns, habits, streak, selections, mealOptions, participationHistory } = await getUserData(userId, cohortId)
+  const { user, checkIns, habits, streak, selections, mealOptions, participationHistory, weeklyExercise } = await getUserData(userId, cohortId)
 
   if (!user) {
     notFound()
@@ -126,6 +132,42 @@ export default async function UserDetailPage({ params }: UserDetailPageProps) {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Weekly Exercise */}
+      <div className="bg-card rounded-xl border border-border p-6">
+        <div className="flex items-center gap-2 mb-4">
+          <Dumbbell className="h-4 w-4 text-primary" />
+          <h2 className="font-medium text-foreground">Weekly Exercise Goal (3x/week)</h2>
+        </div>
+        {weeklyExercise && weeklyExercise.length > 0 ? (
+          <div className="flex flex-wrap gap-3">
+            {weeklyExercise.map((week, index) => (
+              <div
+                key={week.id}
+                className={`flex items-center gap-2 px-3 py-2 rounded-lg ${
+                  week.completed_3x
+                    ? 'bg-green-100 dark:bg-green-900/30'
+                    : 'bg-muted'
+                }`}
+              >
+                {week.completed_3x ? (
+                  <Check className="h-4 w-4 text-green-600 dark:text-green-400" />
+                ) : (
+                  <X className="h-4 w-4 text-muted-foreground" />
+                )}
+                <span className="text-sm font-medium">
+                  Week {index + 1}
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  ({format(new Date(week.week_start_date), 'MMM d')})
+                </span>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-sm text-muted-foreground">No exercise data recorded yet</p>
+        )}
       </div>
 
       {/* Challenge History */}

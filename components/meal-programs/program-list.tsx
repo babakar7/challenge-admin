@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { format } from 'date-fns'
+import { fr } from 'date-fns/locale'
 import { MoreHorizontal, Pencil, Copy, Trash2, Utensils, Calendar } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -55,7 +56,7 @@ export function ProgramList({ programs, canManage }: ProgramListProps) {
     if (result.error) {
       toast.error(result.error)
     } else {
-      toast.success('Program deleted')
+      toast.success('Plan alimentaire supprimé')
       router.refresh()
     }
 
@@ -66,12 +67,12 @@ export function ProgramList({ programs, canManage }: ProgramListProps) {
   async function handleDuplicate(id: string, name: string) {
     setLoading(true)
 
-    const result = await duplicateMealProgram(id, `${name} (Copy)`)
+    const result = await duplicateMealProgram(id, `${name} (Copie)`)
 
     if (result.error) {
       toast.error(result.error)
     } else {
-      toast.success('Program duplicated')
+      toast.success('Plan alimentaire dupliqué')
       router.refresh()
     }
 
@@ -82,9 +83,9 @@ export function ProgramList({ programs, canManage }: ProgramListProps) {
     return (
       <div className="text-center py-12 bg-card rounded-xl border border-border">
         <Utensils className="h-12 w-12 mx-auto text-muted-foreground/50" />
-        <h3 className="mt-4 text-lg font-medium text-foreground">No meal programs</h3>
+        <h3 className="mt-4 text-lg font-medium text-foreground">Aucun plan alimentaire</h3>
         <p className="mt-2 text-sm text-muted-foreground">
-          Create your first meal program to get started
+          Créez votre premier plan alimentaire pour commencer
         </p>
       </div>
     )
@@ -129,7 +130,7 @@ export function ProgramList({ programs, canManage }: ProgramListProps) {
                         }}
                       >
                         <Pencil className="h-4 w-4 mr-2" />
-                        Edit Meals
+                        Modifier les repas
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         onClick={(e) => {
@@ -138,7 +139,7 @@ export function ProgramList({ programs, canManage }: ProgramListProps) {
                         }}
                       >
                         <Copy className="h-4 w-4 mr-2" />
-                        Duplicate
+                        Dupliquer
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
@@ -149,7 +150,7 @@ export function ProgramList({ programs, canManage }: ProgramListProps) {
                         className="text-destructive focus:text-destructive"
                       >
                         <Trash2 className="h-4 w-4 mr-2" />
-                        Delete
+                        Supprimer
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -159,7 +160,7 @@ export function ProgramList({ programs, canManage }: ProgramListProps) {
               <div className="flex items-center gap-4 mt-4 text-xs text-muted-foreground">
                 <span className="flex items-center gap-1">
                   <Utensils className="h-3.5 w-3.5" />
-                  {mealCount} meals
+                  {mealCount} repas
                 </span>
                 <span className="flex items-center gap-1">
                   <Calendar className="h-3.5 w-3.5" />
@@ -169,7 +170,7 @@ export function ProgramList({ programs, canManage }: ProgramListProps) {
 
               {program.created_at && (
                 <p className="text-xs text-muted-foreground mt-3">
-                  Created {format(new Date(program.created_at), 'MMM d, yyyy')}
+                  Créé le {format(new Date(program.created_at), 'd MMM yyyy', { locale: fr })}
                 </p>
               )}
             </Link>
@@ -180,20 +181,20 @@ export function ProgramList({ programs, canManage }: ProgramListProps) {
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete meal program?</AlertDialogTitle>
+            <AlertDialogTitle>Supprimer le plan alimentaire ?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently delete this meal program and all its meals.
-              This action cannot be undone.
+              Cela supprimera définitivement ce plan alimentaire et tous ses repas.
+              Cette action est irréversible.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={loading}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={loading}>Annuler</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
               disabled={loading}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              {loading ? 'Deleting...' : 'Delete'}
+              {loading ? 'Suppression...' : 'Supprimer'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

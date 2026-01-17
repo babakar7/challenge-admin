@@ -8,6 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { ClipboardList } from 'lucide-react'
 
 interface MealOption {
   id: string
@@ -60,17 +61,31 @@ export function SelectionsTable({ selections, mealOptions, week }: SelectionsTab
   // Get all days that have selections
   const days = [1, 2, 3, 4, 5, 6, 7]
 
+  if (selections.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-16 bg-card rounded-xl border border-border">
+        <div className="rounded-full bg-muted p-4 mb-4">
+          <ClipboardList className="h-8 w-8 text-muted-foreground" />
+        </div>
+        <h3 className="text-lg font-medium text-foreground mb-2">Aucune sélection pour la semaine {week}</h3>
+        <p className="text-muted-foreground text-center max-w-sm">
+          Les participants apparaîtront ici une fois leurs sélections de repas soumises pour cette semaine.
+        </p>
+      </div>
+    )
+  }
+
   return (
     <div className="bg-card rounded-xl border border-border overflow-hidden overflow-x-auto">
       <Table>
         <TableHeader>
           <TableRow className="hover:bg-transparent">
             <TableHead className="sticky left-0 bg-card">Participant</TableHead>
-            <TableHead>Delivery</TableHead>
-            <TableHead>Status</TableHead>
+            <TableHead>Livraison</TableHead>
+            <TableHead>Statut</TableHead>
             {days.map((day) => (
               <TableHead key={day} className="text-center min-w-[140px]">
-                Day {day}
+                Jour {day}
               </TableHead>
             ))}
           </TableRow>
@@ -89,11 +104,11 @@ export function SelectionsTable({ selections, mealOptions, week }: SelectionsTab
               <TableCell>
                 {selection.locked ? (
                   <span className="px-2 py-0.5 text-xs rounded-full bg-primary/10 text-primary">
-                    Locked
+                    Verrouillé
                   </span>
                 ) : (
                   <span className="px-2 py-0.5 text-xs rounded-full bg-muted text-muted-foreground">
-                    Pending
+                    En attente
                   </span>
                 )}
               </TableCell>
@@ -109,7 +124,7 @@ export function SelectionsTable({ selections, mealOptions, week }: SelectionsTab
                     <div className="space-y-1">
                       {lunchChoice && (
                         <div className="text-xs">
-                          <span className="text-muted-foreground">L: </span>
+                          <span className="text-muted-foreground">Déj: </span>
                           <span className="text-foreground">
                             {getMealName(day, 'lunch', lunchChoice)}
                           </span>
@@ -117,7 +132,7 @@ export function SelectionsTable({ selections, mealOptions, week }: SelectionsTab
                       )}
                       {dinnerChoice && (
                         <div className="text-xs">
-                          <span className="text-muted-foreground">D: </span>
+                          <span className="text-muted-foreground">Dîn: </span>
                           <span className="text-foreground">
                             {getMealName(day, 'dinner', dinnerChoice)}
                           </span>

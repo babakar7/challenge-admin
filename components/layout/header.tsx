@@ -72,7 +72,7 @@ export function Header({ user, cohorts }: HeaderProps) {
             className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             <UtensilsCrossed className="h-4 w-4" />
-            <span className="hidden sm:block">Meal Programs</span>
+            <span className="hidden sm:block">Plans alimentaires</span>
           </Link>
         </div>
 
@@ -111,7 +111,7 @@ export function Header({ user, cohorts }: HeaderProps) {
               className="text-destructive focus:text-destructive focus:bg-destructive/10"
             >
               <LogOut className="mr-2 h-4 w-4" />
-              Sign out
+              Déconnexion
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

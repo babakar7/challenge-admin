@@ -6,7 +6,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { z } from 'zod'
 
 const createProgramSchema = z.object({
-  name: z.string().min(1, 'Name is required'),
+  name: z.string().min(1, 'Le nom est requis'),
   description: z.string().optional(),
 })
 
@@ -68,7 +68,7 @@ export async function createMealProgram(formData: FormData) {
   const { authorized } = await verifySuperAdmin()
 
   if (!authorized) {
-    return { error: 'Unauthorized' }
+    return { error: 'Non autorisé' }
   }
 
   const input = createProgramSchema.safeParse({
@@ -103,7 +103,7 @@ export async function updateMealProgram(id: string, formData: FormData) {
   const { authorized, supabase } = await verifySuperAdmin()
 
   if (!authorized) {
-    return { error: 'Unauthorized' }
+    return { error: 'Non autorisé' }
   }
 
   const input = createProgramSchema.safeParse({
@@ -136,7 +136,7 @@ export async function deleteMealProgram(id: string) {
   const { authorized, supabase } = await verifySuperAdmin()
 
   if (!authorized) {
-    return { error: 'Unauthorized' }
+    return { error: 'Non autorisé' }
   }
 
   // Check if any cohorts are using this program
@@ -146,7 +146,7 @@ export async function deleteMealProgram(id: string) {
     .eq('meal_program_id', id)
 
   if (cohorts && cohorts.length > 0) {
-    return { error: `Cannot delete: ${cohorts.length} challenge(s) are using this program` }
+    return { error: `Impossible de supprimer : ${cohorts.length} challenge(s) utilisent ce plan` }
   }
 
   const { error } = await supabase
@@ -166,7 +166,7 @@ export async function duplicateMealProgram(id: string, newName: string) {
   const { authorized, supabase } = await verifySuperAdmin()
 
   if (!authorized) {
-    return { error: 'Unauthorized' }
+    return { error: 'Non autorisé' }
   }
 
   // Get the original program
@@ -177,7 +177,7 @@ export async function duplicateMealProgram(id: string, newName: string) {
     .single()
 
   if (fetchError || !original) {
-    return { error: 'Program not found' }
+    return { error: 'Programme non trouvé' }
   }
 
   // Create new program
@@ -191,7 +191,7 @@ export async function duplicateMealProgram(id: string, newName: string) {
     .single()
 
   if (createError || !newProgram) {
-    return { error: createError?.message || 'Failed to create program' }
+    return { error: createError?.message || 'Échec de la création du programme' }
   }
 
   // Copy all meal options from original to new program

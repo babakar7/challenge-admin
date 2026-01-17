@@ -5,10 +5,10 @@ import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
 
 const mealOptionSchema = z.object({
-  option_a_name: z.string().min(1, 'Option A name is required'),
+  option_a_name: z.string().min(1, 'Le nom de l\'option A est requis'),
   option_a_description: z.string().optional(),
   option_a_image_url: z.string().optional(),
-  option_b_name: z.string().min(1, 'Option B name is required'),
+  option_b_name: z.string().min(1, 'Le nom de l\'option B est requis'),
   option_b_description: z.string().optional(),
   option_b_image_url: z.string().optional(),
 })
@@ -35,7 +35,7 @@ export async function updateMealOption(id: string, formData: FormData) {
   const { authorized, supabase } = await verifySuperAdmin()
 
   if (!authorized) {
-    return { error: 'Unauthorized' }
+    return { error: 'Non autorisé' }
   }
 
   const input = mealOptionSchema.safeParse({
@@ -83,7 +83,7 @@ export async function createMealOption(
   const { authorized, supabase } = await verifySuperAdmin()
 
   if (!authorized) {
-    return { error: 'Unauthorized' }
+    return { error: 'Non autorisé' }
   }
 
   const input = mealOptionSchema.safeParse({
